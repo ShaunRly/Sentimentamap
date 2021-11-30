@@ -1,0 +1,1 @@
+https://start.spring.io/#!type=maven-project&language=java&platformVersion=2.6.0&packaging=jar&jvmVersion=17&groupId=com.ironhack&artifactId=Sentimentamap&name=Sentimentamap&description=Final%20Project%20for%20Ironhack%20Bootcamp&packageName=com.ironhack.Sentimentamap&dependencies=lombok,data-jpa,data-jdbc,jdbc,mysql,cloud-feign,cloud-eureka,cloud-resilience4j
