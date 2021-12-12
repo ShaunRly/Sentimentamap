@@ -2,7 +2,7 @@ package com.ironhack.Sentimentamap.TwitterAPIMS.Main;
 
 import com.github.scribejava.core.model.Response;
 import com.ironhack.Sentimentamap.TwitterAPIMS.Proxy.SentimentProxy;
-import com.ironhack.Sentimentamap.TwitterAPIMS.Service.ProxyService;
+import com.ironhack.Sentimentamap.TwitterAPIMS.dto.TrendsDTO;
 import com.ironhack.Sentimentamap.TwitterAPIMS.dto.TweetDTO;
 import io.github.redouane59.twitter.IAPIEventListener;
 import io.github.redouane59.twitter.TwitterClient;
@@ -24,10 +24,10 @@ import org.apache.http.client.methods.HttpGet;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -36,20 +36,29 @@ import java.util.*;
 import java.util.concurrent.Future;
 
 @Component
+@EnableFeignClients
+@EnableAsync
 public class TwitterStreamer {
 
-    @Autowired
-    SentimentProxy sentimentProxy;
+    private final SentimentProxy sentimentProxy;
+
+    public TwitterStreamer(SentimentProxy sentimentProxy){
+        this.sentimentProxy = sentimentProxy;
+    }
+
+    public TwitterClient twitterClient = new TwitterClient(TwitterCredentials.builder()
+            .accessToken("AAAAAAAAAAAAAAAAAAAAAMNHWAEAAAAAmjAtURmNJnppCu%2FZmYfCClOOx0U%3D2lV9JEZv3cJ2MbEVFqwRs0S7Ijs4neLSMCn4swQJvjgfF8aiEb")
+            .apiKey("d3epwKMaUdJxRxf4h3MuCaSh3")
+            .apiSecretKey("KmigqPIghizd3wWKRfvhtMxYwUETXrd2KezG15IjYs1SCGoyPK")
+            .build());
 
     public void mainLoop() throws JSONException, IOException, URISyntaxException {
+        scheduledRuleMethod();
+        tweetStream();
+    }
 
-        TwitterClient twitterClient = new TwitterClient(TwitterCredentials.builder()
-                .accessToken("AAAAAAAAAAAAAAAAAAAAAMNHWAEAAAAAmjAtURmNJnppCu%2FZmYfCClOOx0U%3D2lV9JEZv3cJ2MbEVFqwRs0S7Ijs4neLSMCn4swQJvjgfF8aiEb")
-                .apiKey("d3epwKMaUdJxRxf4h3MuCaSh3")
-                .apiSecretKey("KmigqPIghizd3wWKRfvhtMxYwUETXrd2KezG15IjYs1SCGoyPK")
-                .build());
-
-        //twitterClient.addFilteredStreamRule("#NewYork sample:10", "base");
+    @Async
+    private void tweetStream() {
 
         IAPIEventListener eventListener = new IAPIEventListener() {
             @Override
@@ -65,12 +74,19 @@ public class TwitterStreamer {
                     matchingRules.add(streamRules.getTag());
                 }
 
-                sentimentProxy.postTweetsForSentimentAnalysis(new TweetDTO(
+                TweetDTO tweetDTO = new TweetDTO(
                         tweet.getText(),
                         tweet.getCreatedAt(),
                         tweet.getGeo().getCoordinates() != null ? tweet.getGeo().getCoordinates().toString() : "No Geo Location",
                         matchingRules
-                ));
+                );
+
+
+                try {
+                    sentimentProxy.postTweetsForSentimentAnalysis(tweetDTO);
+                } catch (Exception e){
+                    System.out.println(e);
+                }
             }
 
             @Override
@@ -84,26 +100,82 @@ public class TwitterStreamer {
             }
         };
 
-        Map<String, String> rules = new HashMap<>();
-        rules.put("#NewYork", "Place1");
-        setupRules(twitterClient.getBearerToken(), rules);
-
-
         Future<Response> tweetStream = twitterClient.startFilteredStream(eventListener);
+
     }
 
-    private static void setupRules(String bearerToken, Map<String, String> rules) throws IOException, URISyntaxException, JSONException {
+    @Scheduled(cron = " 0 0/30 * * * *")
+    @Async
+    public void scheduledRuleMethod() throws JSONException, URISyntaxException, IOException {
+        List<String> trends = getTrends();
+        Map<String, String> trendRules = buildTrendRules(trends);
+
+        Map<String, String> fullRules = trendRules;
+        trendRules.put("(#NewYork OR New York) sample:1", "Place1/New York");
+        trendRules.put("(#London OR London) sample:1", "Place2/London");
+        trendRules.put("(#Manchester OR Manchester) sample:1", "Place3/Manchester");
+        trendRules.put("(#Barcelona OR Barcelona) sample:1", "Place4/Barcelona");
+        trendRules.put("(#Paris OR Paris) sample:1", "Place5/Paris");
+
+        setupRules(twitterClient.getBearerToken(), fullRules);
+    }
+
+    private List<String> getTrends() throws URISyntaxException, IOException, JSONException {
+        List<String> trends = new ArrayList<>();
+        HttpClient httpClient = HttpClients.custom()
+                .setDefaultRequestConfig(RequestConfig.custom()
+                        .setCookieSpec(CookieSpecs.STANDARD).build())
+                .build();
+
+        URIBuilder uriBuilder = new URIBuilder("https://api.twitter.com/1.1/trends/place.json?id=1");
+        HttpGet httpGet = new HttpGet(uriBuilder.build());
+        httpGet.setHeader("Authorization", String.format("Bearer %s", "AAAAAAAAAAAAAAAAAAAAAMNHWAEAAAAAmjAtURmNJnppCu%2FZmYfCClOOx0U%3D2lV9JEZv3cJ2MbEVFqwRs0S7Ijs4neLSMCn4swQJvjgfF8aiEb"));
+        HttpResponse response = httpClient.execute(httpGet);
+        httpGet.setHeader("content-type", "application/json");
+        HttpEntity entity = response.getEntity();
+        if (null != entity) {
+            JSONArray json = new JSONArray(EntityUtils.toString(entity, "UTF-8"));
+            JSONObject jsonObject = json.getJSONObject(0);
+            List<String> trendsKeywordList = new ArrayList<>();
+            int topTrendsLimit = 5;
+            int counter = 0;
+            while(trendsKeywordList.size() < 5) {
+                TrendsDTO trendsDTO = new TrendsDTO((JSONObject) jsonObject.getJSONArray("trends").get(counter));
+                if(trendsDTO.getQuery().length() < 30) {
+                    trendsKeywordList.add(trendsDTO.getName());
+                }
+                counter++;
+            }
+            return trendsKeywordList;
+        }
+        throw new JSONException("No JSON Content");
+    }
+
+    private Map<String, String> buildTrendRules(List<String> trends){
+        Map<String, String> trendRules = new HashMap<>();
+        int trendCounter = 1;
+        for (var trend : trends){
+            trendRules.put(
+                    trend + " sample: 1",
+                    "Trend" + trendCounter + "/" + trend
+            );
+        }
+        return trendRules;
+    }
+
+    private void setupRules(String bearerToken, Map<String, String> rules) throws IOException, URISyntaxException, JSONException {
         List<String> existingRules = getRules(bearerToken);
         if (existingRules.size() > 0) {
             deleteRules(bearerToken, existingRules);
         }
         createRules(bearerToken, rules);
+
     }
 
     /*
      * Helper method to create rules for filtering
      * */
-    private static void createRules(String bearerToken, Map<String, String> rules) throws URISyntaxException, IOException {
+    private void createRules(String bearerToken, Map<String, String> rules) throws URISyntaxException, IOException {
         HttpClient httpClient = HttpClients.custom()
                 .setDefaultRequestConfig(RequestConfig.custom()
                         .setCookieSpec(CookieSpecs.STANDARD).build())
@@ -126,7 +198,7 @@ public class TwitterStreamer {
     /*
      * Helper method to get existing rules
      * */
-    private static List<String> getRules(String bearerToken) throws URISyntaxException, IOException, JSONException {
+    private List<String> getRules(String bearerToken) throws URISyntaxException, IOException, JSONException {
         List<String> rules = new ArrayList<>();
         HttpClient httpClient = HttpClients.custom()
                 .setDefaultRequestConfig(RequestConfig.custom()
@@ -156,7 +228,7 @@ public class TwitterStreamer {
     /*
      * Helper method to delete rules
      * */
-    private static void deleteRules(String bearerToken, List<String> existingRules) throws URISyntaxException, IOException {
+    private void deleteRules(String bearerToken, List<String> existingRules) throws URISyntaxException, IOException {
         HttpClient httpClient = HttpClients.custom()
                 .setDefaultRequestConfig(RequestConfig.custom()
                         .setCookieSpec(CookieSpecs.STANDARD).build())
@@ -176,7 +248,7 @@ public class TwitterStreamer {
         }
     }
 
-    private static String getFormattedString(String string, List<String> ids) {
+    private String getFormattedString(String string, List<String> ids) {
         StringBuilder sb = new StringBuilder();
         if (ids.size() == 1) {
             return String.format(string, "\"" + ids.get(0) + "\"");
@@ -189,7 +261,7 @@ public class TwitterStreamer {
         }
     }
 
-    private static String getFormattedString(String string, Map<String, String> rules) {
+    private String getFormattedString(String string, Map<String, String> rules) {
         StringBuilder sb = new StringBuilder();
         if (rules.size() == 1) {
             String key = rules.keySet().iterator().next();
@@ -204,6 +276,5 @@ public class TwitterStreamer {
             return String.format(string, result.substring(0, result.length() - 1));
         }
     }
-
 
 }

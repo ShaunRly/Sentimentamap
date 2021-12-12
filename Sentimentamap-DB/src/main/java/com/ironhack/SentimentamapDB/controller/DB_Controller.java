@@ -1,11 +1,15 @@
 package com.ironhack.SentimentamapDB.controller;
 
 import com.ironhack.SentimentamapDB.dao.TweetData;
+import com.ironhack.SentimentamapDB.dto.BubbleDTO;
+import com.ironhack.SentimentamapDB.dto.QueryDTO;
 import com.ironhack.SentimentamapDB.dto.TweetDTO;
 import com.ironhack.SentimentamapDB.repository.TweetDataRepository;
 import com.ironhack.SentimentamapDB.service.DBService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/tweetdb")
@@ -19,12 +23,32 @@ public class DB_Controller {
 
     @PostMapping
     @RequestMapping("/post")
-    public void storeTweet(@RequestBody TweetDTO tweetDTO){
-        dbService.storeTweet(tweetDTO);
+    public TweetData storeTweet(@RequestBody TweetDTO tweetDTO){
+        return dbService.storeTweet(tweetDTO);
     }
 
     @GetMapping("/{id}")
     public TweetData getTweet(@PathVariable Long id){
         return tweetDataRepository.findById(id).orElse(null);
+    }
+
+    @GetMapping("/query")
+    public List<TweetData> getTweetsByQuery(@RequestBody QueryDTO queryDTO){
+        return dbService.queryDB(queryDTO);
+    }
+
+
+    @GetMapping("/bubbleQuery")
+    public List<BubbleDTO> getTweetsForBubble(@RequestParam String rule, @RequestParam String dateTimeStart, @RequestParam String dateTimeEnd){
+        System.out.println(rule);
+        System.out.println(dateTimeStart);
+        System.out.println(dateTimeEnd);
+
+        return dbService.getDataForBubble(new QueryDTO(rule, dateTimeStart, dateTimeEnd));
+    }
+
+    @GetMapping("/mapdata")
+    public String getGeoJsonData(){
+        return dbService.getGeoJsonData();
     }
 }

@@ -7,6 +7,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="Sentimentamap.VotingDB" />
+        <module name="Sentimentamap.users" />
         <module name="Sentimentamap-DB" />
         <module name="Sentimentamap.TwitterAPIMS" />
         <module name="discovery-service" />
@@ -16,12 +18,16 @@
       <module name="discovery-service" target="17" />
       <module name="Sentimentamap-DB" target="17" />
       <module name="Sentimentamap.TwitterAPIMS" target="17" />
+      <module name="Sentimentamap.users" target="17" />
+      <module name="Sentimentamap.VotingDB" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="Sentimentamap-DB" options="-parameters" />
       <module name="Sentimentamap.TwitterAPIMS" options="-parameters" />
+      <module name="Sentimentamap.VotingDB" options="-parameters" />
+      <module name="Sentimentamap.users" options="-parameters" />
       <module name="discovery-service" options="-parameters" />
     </option>
   </component>

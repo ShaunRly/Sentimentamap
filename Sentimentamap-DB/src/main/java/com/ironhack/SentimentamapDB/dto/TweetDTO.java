@@ -18,7 +18,7 @@ public class TweetDTO {
     private Sentiment sentiment;
     private String createdAt;
     private String coordinates;
-    private List<String> matchingRules;
+    private String matchingRules;
 
     @Override
     public String toString() {

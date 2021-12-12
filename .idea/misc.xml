@@ -6,6 +6,8 @@
         <option value="$PROJECT_DIR$/Sentimentamap-DB/pom.xml" />
         <option value="$PROJECT_DIR$/Sentimentamap.TwitterAPIMS/pom.xml" />
         <option value="$PROJECT_DIR$/discovery-service/pom.xml" />
+        <option value="$PROJECT_DIR$/Sentimentamap.users/pom.xml" />
+        <option value="$PROJECT_DIR$/Sentimentamap.VotingDB/pom.xml" />
       </list>
     </option>
   </component>
