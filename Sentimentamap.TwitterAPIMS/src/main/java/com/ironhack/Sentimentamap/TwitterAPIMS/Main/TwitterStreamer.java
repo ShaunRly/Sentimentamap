@@ -46,6 +46,8 @@ public class TwitterStreamer {
         this.sentimentProxy = sentimentProxy;
     }
 
+    public Map<String, String> lastRules = new HashMap<>();
+
     public TwitterClient twitterClient = new TwitterClient(TwitterCredentials.builder()
             .accessToken("AAAAAAAAAAAAAAAAAAAAAMNHWAEAAAAAmjAtURmNJnppCu%2FZmYfCClOOx0U%3D2lV9JEZv3cJ2MbEVFqwRs0S7Ijs4neLSMCn4swQJvjgfF8aiEb")
             .apiKey("d3epwKMaUdJxRxf4h3MuCaSh3")
@@ -111,13 +113,21 @@ public class TwitterStreamer {
         Map<String, String> trendRules = buildTrendRules(trends);
 
         Map<String, String> fullRules = trendRules;
-        trendRules.put("(#NewYork OR New York) sample:1", "Place1/New York");
-        trendRules.put("(#London OR London) sample:1", "Place2/London");
-        trendRules.put("(#Manchester OR Manchester) sample:1", "Place3/Manchester");
-        trendRules.put("(#Barcelona OR Barcelona) sample:1", "Place4/Barcelona");
-        trendRules.put("(#Paris OR Paris) sample:1", "Place5/Paris");
+        fullRules.put("(#NewYork OR New York) sample:1", "Place1/New York");
+        fullRules.put("(#London OR London) sample:1", "Place2/London");
+        fullRules.put("(#Manchester OR Manchester) sample:1", "Place3/Manchester");
+        fullRules.put("(#Barcelona OR Barcelona) sample:1", "Place4/Barcelona");
+        fullRules.put("(#Paris OR Paris) sample:1", "Place5/Paris");
 
-        setupRules(twitterClient.getBearerToken(), fullRules);
+        System.out.println(fullRules);
+
+        //Temp fix for some trends producing invalid JSON requests
+        try {
+            setupRules(twitterClient.getBearerToken(), fullRules);
+            lastRules = fullRules;
+        } catch (Exception e){
+            setupRules(twitterClient.getBearerToken(), lastRules);
+        }
     }
 
     private List<String> getTrends() throws URISyntaxException, IOException, JSONException {
@@ -155,10 +165,8 @@ public class TwitterStreamer {
         Map<String, String> trendRules = new HashMap<>();
         int trendCounter = 1;
         for (var trend : trends){
-            trendRules.put(
-                    trend + " sample: 1",
-                    "Trend" + trendCounter + "/" + trend
-            );
+            trendRules.put("(" + trend + ")" + " sample:1", "Trend" + trendCounter + "/" + trend);
+            trendCounter++;
         }
         return trendRules;
     }

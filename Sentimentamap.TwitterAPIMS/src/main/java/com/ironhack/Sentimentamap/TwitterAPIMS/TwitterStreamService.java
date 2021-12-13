@@ -14,13 +14,13 @@ import java.net.URISyntaxException;
 
 @SpringBootApplication
 @EnableFeignClients
-public class Application implements CommandLineRunner{
+public class TwitterStreamService implements CommandLineRunner{
 
 	@Autowired
 	TwitterStreamer twitterStreamer;
 
 	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
+		SpringApplication.run(TwitterStreamService.class, args);
 	}
 
 	@Override

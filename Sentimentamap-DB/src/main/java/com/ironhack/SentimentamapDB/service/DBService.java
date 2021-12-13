@@ -44,7 +44,20 @@ public class DBService {
         );
     }
 
+    public List<TweetData> getDataForTopic(QueryDTO queryDTO) {
+        return tweetDataRepository.findTweetsForTopic(
+                queryDTO.getRule(),
+                queryDTO.getDateTimeStart(),
+                queryDTO.getDateTimeEnd()
+        );
+    }
+
     public String getGeoJsonData() {
         return null;
     }
+
+    public List<String> getTrackedTopics(QueryDTO queryDTO) {
+        return tweetDataRepository.findTrackedTopicsPerHalfHour(queryDTO.dateTimeStart, queryDTO.dateTimeEnd);
+    }
+
 }

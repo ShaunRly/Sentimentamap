@@ -38,17 +38,23 @@ public class DB_Controller {
     }
 
 
-    @GetMapping("/bubbleQuery")
-    public List<BubbleDTO> getTweetsForBubble(@RequestParam String rule, @RequestParam String dateTimeStart, @RequestParam String dateTimeEnd){
-        System.out.println(rule);
-        System.out.println(dateTimeStart);
-        System.out.println(dateTimeEnd);
-
+    @GetMapping("/bubbleCategoryQuery")
+    public List<BubbleDTO> getTweetsForCategoryForBubble(@RequestParam String rule, @RequestParam String dateTimeStart, @RequestParam String dateTimeEnd){
         return dbService.getDataForBubble(new QueryDTO(rule, dateTimeStart, dateTimeEnd));
+    }
+
+    @GetMapping("/topicQuery")
+    public List<TweetData> getTweetsForTopic(@RequestParam String rule, @RequestParam String dateTimeStart, @RequestParam String dateTimeEnd){
+        return dbService.getDataForTopic(new QueryDTO(rule, dateTimeStart, dateTimeEnd));
     }
 
     @GetMapping("/mapdata")
     public String getGeoJsonData(){
         return dbService.getGeoJsonData();
+    }
+
+    @GetMapping("/tracked")
+    public List<String> getTrackedTopics(@RequestParam String dateTimeStart, @RequestParam String dateTimeEnd){
+        return dbService.getTrackedTopics(new QueryDTO(dateTimeStart, dateTimeEnd));
     }
 }

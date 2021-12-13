@@ -26,4 +26,10 @@ public class QueryDTO {
         this.dateTimeStart = LocalDateTime.parse(dateTimeStart, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.dateTimeEnd = LocalDateTime.parse(dateTimeEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
     }
+
+    public QueryDTO(String dateTimeStart, String dateTimeEnd) {
+        this.rule = "NAN";
+        this.dateTimeStart = LocalDateTime.parse(dateTimeStart, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        this.dateTimeEnd = LocalDateTime.parse(dateTimeEnd, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+    }
 }
