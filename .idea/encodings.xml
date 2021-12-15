@@ -3,6 +3,8 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/Sentimentamap-DB/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Sentimentamap-DB/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Sentimentamap.MicroGeo/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Sentimentamap.MicroGeo/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Sentimentamap.TwitterAPIMS/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Sentimentamap.TwitterAPIMS/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Sentimentamap.VotingDB/src/main/java" charset="UTF-8" />

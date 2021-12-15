@@ -2,6 +2,7 @@ package com.ironhack.SentimentamapDB.controller;
 
 import com.ironhack.SentimentamapDB.dao.TweetData;
 import com.ironhack.SentimentamapDB.dto.BubbleDTO;
+import com.ironhack.SentimentamapDB.dto.MapDataDTO;
 import com.ironhack.SentimentamapDB.dto.QueryDTO;
 import com.ironhack.SentimentamapDB.dto.TweetDTO;
 import com.ironhack.SentimentamapDB.repository.TweetDataRepository;
@@ -49,8 +50,8 @@ public class DB_Controller {
     }
 
     @GetMapping("/mapdata")
-    public String getGeoJsonData(){
-        return dbService.getGeoJsonData();
+    public List<MapDataDTO> getGeoJsonData(@RequestParam String dateTimeStart, @RequestParam String dateTimeEnd){
+        return dbService.getGeoJsonData(new QueryDTO(dateTimeStart, dateTimeEnd));
     }
 
     @GetMapping("/tracked")

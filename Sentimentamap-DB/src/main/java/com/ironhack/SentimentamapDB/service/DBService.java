@@ -2,12 +2,15 @@ package com.ironhack.SentimentamapDB.service;
 
 import com.ironhack.SentimentamapDB.dao.TweetData;
 import com.ironhack.SentimentamapDB.dto.BubbleDTO;
+import com.ironhack.SentimentamapDB.dto.MapDataDTO;
 import com.ironhack.SentimentamapDB.dto.QueryDTO;
 import com.ironhack.SentimentamapDB.dto.TweetDTO;
 import com.ironhack.SentimentamapDB.repository.TweetDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -52,8 +55,10 @@ public class DBService {
         );
     }
 
-    public String getGeoJsonData() {
-        return null;
+    public List<MapDataDTO> getGeoJsonData(QueryDTO queryDTO) {
+        System.out.println(queryDTO.getDateTimeStart());
+        System.out.println(queryDTO.getDateTimeEnd());
+        return tweetDataRepository.findTweetsForMap(queryDTO.getDateTimeStart(), queryDTO.getDateTimeEnd());
     }
 
     public List<String> getTrackedTopics(QueryDTO queryDTO) {

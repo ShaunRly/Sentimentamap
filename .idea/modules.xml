@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Sentimentamap-DB/Sentimentamap-DB.iml" filepath="$PROJECT_DIR$/Sentimentamap-DB/Sentimentamap-DB.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Sentimentamap.MicroGeo/Sentimentamap.MicroGeo.iml" filepath="$PROJECT_DIR$/Sentimentamap.MicroGeo/Sentimentamap.MicroGeo.iml" />
       <module fileurl="file://$PROJECT_DIR$/Sentimentamap.TwitterAPIMS/Sentimentamap.TwitterAPIMS.iml" filepath="$PROJECT_DIR$/Sentimentamap.TwitterAPIMS/Sentimentamap.TwitterAPIMS.iml" />
       <module fileurl="file://$PROJECT_DIR$/Sentimentamap.VotingDB/Sentimentamap.VotingDB.iml" filepath="$PROJECT_DIR$/Sentimentamap.VotingDB/Sentimentamap.VotingDB.iml" />
       <module fileurl="file://$PROJECT_DIR$/Sentimentamap.users/Sentimentamap.users.iml" filepath="$PROJECT_DIR$/Sentimentamap.users/Sentimentamap.users.iml" />

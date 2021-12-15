@@ -2,6 +2,7 @@ package com.ironhack.SentimentamapDB.repository;
 
 import com.ironhack.SentimentamapDB.dao.TweetData;
 import com.ironhack.SentimentamapDB.dto.BubbleDTO;
+import com.ironhack.SentimentamapDB.dto.MapDataDTO;
 import com.ironhack.SentimentamapDB.dto.QueryDTO;
 import feign.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -41,5 +42,9 @@ public interface TweetDataRepository extends JpaRepository<TweetData, Long> {
             "GROUP BY t.matchingRules ")
     List<String> findTrackedTopicsPerHalfHour(@Param("date1") LocalDateTime date1, @Param("date2") LocalDateTime date2);
 
-
+    @Query("SELECT new com.ironhack.SentimentamapDB.dto.MapDataDTO(t.sentiment.compound, t.matchingRules) FROM TweetData t " +
+            "WHERE t.matchingRules LIKE '%Place%' " +
+            "AND t.createdAt BETWEEN :date1 AND :date2 " +
+            "AND t.sentiment.compound != 0")
+    List<MapDataDTO> findTweetsForMap(@Param("date1") LocalDateTime date1, @Param("date2") LocalDateTime date2);
 }
