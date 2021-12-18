@@ -27,6 +27,12 @@ public class SiteUser {
     private String email;
     private String profileURL;
 
+    public SiteUser(String username, String encode, String email) {
+        this.username = username;
+        this.encodedPassword = encode;
+        this.email = email;
+    }
+
 
     @Override
     public String toString() {

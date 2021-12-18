@@ -33,7 +33,10 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @EnableFeignClients
@@ -49,7 +52,7 @@ public class TwitterStreamer {
     public Map<String, String> lastRules = new HashMap<>();
 
     public TwitterClient twitterClient = new TwitterClient(TwitterCredentials.builder()
-            .accessToken("AAAAAAAAAAAAAAAAAAAAAMNHWAEAAAAAmjAtURmNJnppCu%2FZmYfCClOOx0U%3D2lV9JEZv3cJ2MbEVFqwRs0S7Ijs4neLSMCn4swQJvjgfF8aiEb")
+            .accessToken("AAAAAAAAAAAAAAAAAAAAAMNHWAEAAAAAhWdLdoo%2FFKqDtqupAJ97CQ%2FhR1o%3DNAikoiFiQdCJDwdwveBAoefugwhWYn3nDAxqq2oMK09bOiPrer")
             .apiKey("d3epwKMaUdJxRxf4h3MuCaSh3")
             .apiSecretKey("KmigqPIghizd3wWKRfvhtMxYwUETXrd2KezG15IjYs1SCGoyPK")
             .build());
@@ -60,50 +63,65 @@ public class TwitterStreamer {
     }
 
     @Async
-    private void tweetStream() {
+    private Runnable tweetStream() {
 
         IAPIEventListener eventListener = new IAPIEventListener() {
             @Override
             public void onStreamError(int i, String s) {
+                System.out.println("Stream Error");
                 System.out.println(s);
+                //reOpenStreamRetry();
             }
 
             @Override
             public void onTweetStreamed(Tweet tweet) {
-                TweetV2 tweetV2 = (TweetV2) tweet;
-                List<String> matchingRules = new ArrayList<>();
-                for (StreamRules.StreamRule streamRules : tweetV2.getMatchingRules()){
-                    matchingRules.add(streamRules.getTag());
-                }
-
-                TweetDTO tweetDTO = new TweetDTO(
-                        tweet.getText(),
-                        tweet.getCreatedAt(),
-                        tweet.getGeo().getCoordinates() != null ? tweet.getGeo().getCoordinates().toString() : "No Geo Location",
-                        matchingRules
-                );
-
-
                 try {
-                    sentimentProxy.postTweetsForSentimentAnalysis(tweetDTO);
-                } catch (Exception e){
+                    TweetV2 tweetV2 = (TweetV2) tweet;
+                    List<String> matchingRules = new ArrayList<>();
+                    for (StreamRules.StreamRule streamRules : tweetV2.getMatchingRules()) {
+                        matchingRules.add(streamRules.getTag());
+                    }
+
+                    TweetDTO tweetDTO = new TweetDTO(
+                            tweet.getText(),
+                            tweet.getCreatedAt(),
+                            tweet.getGeo().getCoordinates() != null ? tweet.getGeo().getCoordinates().toString() : "No Geo Location",
+                            matchingRules
+                    );
+
+                    try {
+                        sentimentProxy.postTweetsForSentimentAnalysis(tweetDTO);
+                    } catch (Exception e){
+                        System.out.println(e);
+                    }
+                } catch (Exception e) {
                     System.out.println(e);
                 }
             }
 
             @Override
             public void onUnknownDataStreamed(String s) {
+                System.out.println("Unknown Data");
                 System.out.println("UNKNOWN - " + s);
             }
 
             @Override
             public void onStreamEnded(Exception e) {
+                System.out.println("Stream Ended");
                 System.out.println(e);
+                //reOpenStreamRetry();
             }
         };
 
         Future<Response> tweetStream = twitterClient.startFilteredStream(eventListener);
 
+        return null;
+    }
+
+    @Async
+    private void reOpenStreamRetry() {
+        ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+        scheduledExecutorService.schedule(tweetStream(), 30, TimeUnit.SECONDS);
     }
 
     @Scheduled(cron = " 0 0/30 * * * *")
@@ -118,6 +136,11 @@ public class TwitterStreamer {
         fullRules.put("(#Manchester OR Manchester) sample:1", "Place3/Manchester");
         fullRules.put("(#Barcelona OR Barcelona) sample:1", "Place4/Barcelona");
         fullRules.put("(#Paris OR Paris) sample:1", "Place5/Paris");
+        fullRules.put("(#LosAngeles OR Los Angeles) sample:1", "Place6/Los Angeles");
+        fullRules.put("(#Toronto OR Toronto) sample:1", "Place7/Toronto");
+        fullRules.put("(#Sofia OR Sofia) sample:1", "Place8/Sofia");
+        fullRules.put("(#Bangkok OR Bangkok) sample:1", "Place9/Bangkok");
+        fullRules.put("(#Auckland OR Auckland) sample:1", "Place10/Auckland");
 
         System.out.println(fullRules);
 
@@ -139,7 +162,7 @@ public class TwitterStreamer {
 
         URIBuilder uriBuilder = new URIBuilder("https://api.twitter.com/1.1/trends/place.json?id=1");
         HttpGet httpGet = new HttpGet(uriBuilder.build());
-        httpGet.setHeader("Authorization", String.format("Bearer %s", "AAAAAAAAAAAAAAAAAAAAAMNHWAEAAAAAmjAtURmNJnppCu%2FZmYfCClOOx0U%3D2lV9JEZv3cJ2MbEVFqwRs0S7Ijs4neLSMCn4swQJvjgfF8aiEb"));
+        httpGet.setHeader("Authorization", String.format("Bearer %s", "AAAAAAAAAAAAAAAAAAAAAMNHWAEAAAAAhWdLdoo%2FFKqDtqupAJ97CQ%2FhR1o%3DNAikoiFiQdCJDwdwveBAoefugwhWYn3nDAxqq2oMK09bOiPrer"));
         HttpResponse response = httpClient.execute(httpGet);
         httpGet.setHeader("content-type", "application/json");
         HttpEntity entity = response.getEntity();
@@ -151,7 +174,7 @@ public class TwitterStreamer {
             int counter = 0;
             while(trendsKeywordList.size() < 5) {
                 TrendsDTO trendsDTO = new TrendsDTO((JSONObject) jsonObject.getJSONArray("trends").get(counter));
-                if(trendsDTO.getQuery().length() < 30) {
+                if(trendsDTO.getQuery().length() < 20) {
                     trendsKeywordList.add(trendsDTO.getName());
                 }
                 counter++;

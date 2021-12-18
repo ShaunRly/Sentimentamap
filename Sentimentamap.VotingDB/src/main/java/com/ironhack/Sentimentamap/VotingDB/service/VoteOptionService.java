@@ -19,7 +19,7 @@ public class VoteOptionService {
     @Autowired
     VoteOptionRepository voteRepository;
 
-    public List<TallyDTO> getTalliesForCategories(String date) {
+    public List<TallyDTO> getTalliesForCategories() {
         List<TallyDTO> tallyDTOS = new ArrayList<>();
         for (var category : VoteCategory.values()){
             List<ResultDTO> resultDTOS = voteRepository.getTop5ByCategory(category);
@@ -27,6 +27,8 @@ public class VoteOptionService {
         }
         return tallyDTOS;
     }
+
+
 
     public List<VoteOption> postNewVoteOptionSet(CategoryOptionsDTO categoryOptionsDTO) {
         List<VoteOption> voteOptionsList = new ArrayList<>();
@@ -37,18 +39,18 @@ public class VoteOptionService {
         return voteRepository.saveAll(voteOptionsList);
     }
 
-    public VoteOption castVote(String choice, String category) {
+    public VoteOption castVote(String choice, VoteCategory category) {
         Optional<VoteOption> foundVote = voteRepository.findByChoiceAndCategory(choice, category);
         if(foundVote.isPresent()){
             foundVote.get().addVote();
             return voteRepository.save(foundVote.get());
         }
         else{
-            return voteRepository.save(new VoteOption(choice, VoteCategory.valueOf(category.toUpperCase(Locale.ROOT))));
+            return voteRepository.save(new VoteOption(choice, category));
         }
     }
 
-    public VoteOption removeVote(String choice, String category) {
+    public VoteOption removeVote(String choice, VoteCategory category) {
         Optional<VoteOption> foundVote = voteRepository.findByChoiceAndCategory(choice, category);
         if(foundVote.isPresent()){
             foundVote.get().removeVote();
@@ -57,5 +59,10 @@ public class VoteOptionService {
         else{
             throw new NoSuchElementException("No Vote Option Found with that Name");
         }
+    }
+
+    public List<ResultDTO> getTalliesForCategory(String category) {
+        List<ResultDTO> resultDTOS = voteRepository.getTop5ByCategory(VoteCategory.valueOf(category));
+        return resultDTOS;
     }
 }

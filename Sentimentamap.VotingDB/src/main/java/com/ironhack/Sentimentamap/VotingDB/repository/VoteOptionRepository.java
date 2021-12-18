@@ -23,5 +23,5 @@ public interface VoteOptionRepository extends JpaRepository<VoteOption, Long> {
             "ORDER BY v.voteTally")
     List<ResultDTO> getTop5ByCategory(@Param("category") VoteCategory category);
 
-    Optional<VoteOption> findByChoiceAndCategory(@Param("choice") String choice, @Param("category") String category);
+    Optional<VoteOption> findByChoiceAndCategory(@Param("choice") String choice, @Param("category") VoteCategory category);
 }
