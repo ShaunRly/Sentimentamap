@@ -1,0 +1,188 @@
+<div class="container-fluid">
+    <header>
+        <div class="logo-name">
+            <span class="each-word">Sentimentamap</span>
+        </div>
+        <div class="user-accounts" *ngIf="userStatus == 0">
+            <span id="loginSpan" class="each-word" (click)="show()">Login</span>
+            <span class="each-word" (click)="showReg()">Register</span>
+        </div>
+        <div class="user-accounts" *ngIf="userStatus == 1">
+            <span id="loginSpan" class="each-word" (click)="logout()">Logout</span>
+        </div>
+    </header>
+    <div class="main-container">
+        <div class="navbar-left">
+            <app-side-bar id="navbar"></app-side-bar>
+        </div>
+        <div class="main">
+            <router-outlet></router-outlet>
+            <div class="container-fluid" id="data-display-dropdown" *ngIf="dataTabVisible == false">
+                <div class="data-display-option">
+                    <li routerLinkActive="active">
+                        View
+                    </li>
+                </div>
+                <div class="expand-tab-close" (click)="toggleDataTab()">
+                    <span></span>
+                    <mat-icon class="expand-icon">swap_vert</mat-icon>
+                    <span></span>
+                </div>
+            </div>
+            <div class="container-fluid" id="data-display-dropdown" *ngIf="dataTabVisible == true">
+                <div class="data-display-option">
+                    <li routerLinkActive="active">
+                        View
+                    </li>
+                </div>
+                <div class="data-display-option">
+                    <li routerLinkActive="active">
+                        <a class="menu-item" routerLink="/bubble" >
+                            <img src="../../assets/bubbles.png" alt="bubbleimg" width="100" height="100">
+                        </a>
+                    </li>
+                </div>
+                <div class="data-display-option" id="middle-icon">
+                    <li routerLinkActive="active">
+                        <a class="menu-item" routerLink="/pie" >
+                            <img src="../../assets/pie.png" alt="pieimg" width="100" height="100">
+                        </a>
+                    </li>
+                </div>
+                <div class="data-display-option">
+                    <li routerLinkActive="active">
+                        <a class="menu-item" routerLink="/map" >
+                            <img src="../../assets/map.png" alt="mapimg" width="100" height="100">
+                        </a>
+                    </li>
+                </div>
+                <div class="expand-tab-close" (click)="toggleDataTab()">
+                    <span></span>
+                    <mat-icon class="expand-icon">swap_vert</mat-icon>
+                    <span></span>
+                </div>
+            </div>
+            <div class="container-fluid" id="key" *ngIf="keyTabVisible == true">
+                <div class="data-display-option">
+                    <li routerLinkActive="active">
+                            Key
+                    </li>
+                </div>
+                <div class="data-display-option">
+                    <li routerLinkActive="active">
+                            <img src="../../assets/tweetcount1.png" alt="mapimg" width="100" height="100">
+                    </li>
+                </div>
+                <div class="data-display-option">
+                    <li routerLinkActive="active">
+                            <img src="../../assets/positivity.png" alt="mapimg" width="100" height="100">
+                    </li>
+                </div>
+                <div class="expand-tab-close" (click)="toggleKeyTab()">
+                    <span></span>
+                    <mat-icon class="expand-icon">swap_vert</mat-icon>
+                    <span></span>
+                </div>
+            </div>
+            <div class="container-fluid" id="key" *ngIf="keyTabVisible == false">
+                <div class="data-display-option">
+                    <li routerLinkActive="active">
+                        Key
+                    </li>
+                </div>
+                <div class="expand-tab-close" (click)="toggleKeyTab()">
+                    <span></span>
+                    <mat-icon class="expand-icon">swap_vert</mat-icon>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+        <app-time-slider class="time-slider" *ngIf="(router.url =='/bubble' || router.url =='/pie')"></app-time-slider>
+    </div>
+</div>
+
+<div [style.display]="showLogin ? 'block' : 'none'" class="modal" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="myModalLabel">Login</h4>
+        </div>
+        <div class="modal-body">
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" formControlName="username" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.username.errors }" />
+                    <div *ngIf="submitted && f.username.errors" class="invalid-feedback">
+                        <div *ngIf="f.username.errors.required">username is required</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" formControlName="password" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.password.errors }" />
+                    <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
+                        <div *ngIf="f.password.errors.required">Password is required</div>
+                        <div *ngIf="f.password.errors.minlength">Password must be at least 6 characters</div>
+                    </div>
+                  </div>
+              <div class="form-group form-check">
+                <label class="form-check-label">
+                  <input class="form-check-input" type="checkbox" name="remember"> Remember me
+                </label>
+              </div>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-dark" data-dismiss="modal" (click) = "hide()">Close</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+    <div [style.display]="showRegister ? 'block' : 'none'" class="modal" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title" id="myModalLabel">Register</h4>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="registerForm" (ngSubmit)="onSubmitRegister()">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" formControlName="usernameReg" class="form-control" [ngClass]="{ 'is-invalid': submittedRegister && fr.usernameReg.errors }" />
+                        <div *ngIf="submittedRegister && fr.usernameReg.errors" class="invalid-feedback">
+                            <div *ngIf="fr.usernameReg.errors.required">username is required</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="text" formControlName="emailReg" class="form-control" [ngClass]="{ 'is-invalid': submittedRegister && fr.emailReg.errors }" />
+                        <div *ngIf="submittedRegister && fr.emailReg.errors" class="invalid-feedback">
+                            <div *ngIf="fr.emailReg.errors.required">username is required</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" formControlName="passwordReg" class="form-control" [ngClass]="{ 'is-invalid': submittedRegister && fr.passwordReg.errors }" />
+                        <div *ngIf="submittedRegister && fr.passwordReg.errors" class="invalid-feedback">
+                            <div *ngIf="fr.passwordReg.errors.required">Password is required</div>
+                            <div *ngIf="fr.passwordReg.errors.minlength">Password must be at least 6 characters</div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label>Password Confirmation</label>
+                        <input type="password" formControlName="passwordConfirmationReg" class="form-control" [ngClass]="{ 'is-invalid': submittedRegister && fr.passwordConfirmationReg.errors }" />
+                        <div *ngIf="submittedRegister && fr.passwordConfirmationReg.errors" class="invalid-feedback">
+                            <div *ngIf="fr.passwordConfirmationReg.errors.required">Password is required</div>
+                            <div *ngIf="fr.passwordConfirmationReg.errors.minlength">Password must be at least 6 characters</div>
+                        </div>
+                      </div>
+                  <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-dismiss="modal" (click) = "hideReg()">Close</button>
+            </div>
+          </div>
+    </div>
+</div>

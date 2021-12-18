@@ -1,0 +1,22 @@
+.map {
+    height: 97vh;
+    width: 80vw;
+    position: absolute;
+    top: 3%;
+}
+
+body {
+    -ms-overflow-style: none; /* for Internet Explorer, Edge */
+    scrollbar-width: none; /* for Firefox */
+    overflow-y: scroll; 
+}
+
+body::-webkit-scrollbar{
+    display: none; /* for Chrome, Safari, and Opera */
+}
+
+#spinner{
+    z-index: 5;
+    position: absolute;
+    align-self: center;
+}

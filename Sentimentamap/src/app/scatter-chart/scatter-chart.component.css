@@ -1,0 +1,10 @@
+canvas {
+    height: 75vh;
+    background-color: #14151f;
+}
+
+.canvas-container{
+    position: absolute;
+    top: 16%;
+    left: 24.5%;
+}

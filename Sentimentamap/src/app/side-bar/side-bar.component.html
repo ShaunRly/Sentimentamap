@@ -1,0 +1,49 @@
+<mat-tab-group>
+
+<mat-tab label="Tracked Topics" id="tab">
+<ul class="menu navbar-nav">
+  <li>
+    <a class="menu-item" (click)="setDataChoice('Trend')">Top Trends</a>
+    <ul>
+      <li *ngFor="let trend of trendLabels" (click)="setTopicChoice(trend)"><a class="menu-item">{{trend}}</a></li>
+    </ul>
+  </li>
+  <li>
+    <a class="menu-item" (click)="setDataChoice('Place')">Places</a>
+    <ul>
+      <li *ngFor="let place of placeLabels" (click)="setTopicChoice(place)"><a class="menu-item">{{place}}</a></li>
+    </ul>
+  </li>
+</ul>
+</mat-tab>
+
+<mat-tab label="Voting">
+  <ul class="menu navbar-nav" id="tab">
+    <li>
+      <a class="menu-item">Places</a>
+      <ul>
+        <li *ngFor="let place of placeVoteOptions, index as i" >
+          <a class="menu-item">{{i + 1}}. {{place.optionName}} 
+            <mat-icon class="vote-icon" (click)="castVote(place.optionName, 'PLACE')">plus_one</mat-icon>
+          </a>
+         
+        </li>
+      </ul>
+    </li>
+    <li>
+      <a class="menu-item" >Wildcards</a>
+      <ul>
+        <li *ngFor="let wildcard of wildCardVoteOptions, index as i" >
+          <a class="menu-item">{{i + 1}}. {{wildcard.optionName}}
+            <mat-icon class="vote-icon" (click)="castVote(wildcard.optionName, 'WILDCARD')">plus_one</mat-icon>
+          </a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</mat-tab>
+
+</mat-tab-group>
+  
+  
+  

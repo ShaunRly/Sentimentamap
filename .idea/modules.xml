@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/Sentimentamap/Sentimentamap.iml" filepath="$PROJECT_DIR$/Sentimentamap/Sentimentamap.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Sentimentamap-DB/Sentimentamap-DB.iml" filepath="$PROJECT_DIR$/Sentimentamap-DB/Sentimentamap-DB.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Sentimentamap.MicroGeo/Sentimentamap.MicroGeo.iml" filepath="$PROJECT_DIR$/Sentimentamap.MicroGeo/Sentimentamap.MicroGeo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Sentimentamap.TwitterAPIMS/Sentimentamap.TwitterAPIMS.iml" filepath="$PROJECT_DIR$/Sentimentamap.TwitterAPIMS/Sentimentamap.TwitterAPIMS.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Sentimentamap.VotingDB/Sentimentamap.VotingDB.iml" filepath="$PROJECT_DIR$/Sentimentamap.VotingDB/Sentimentamap.VotingDB.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Sentimentamap.users/Sentimentamap.users.iml" filepath="$PROJECT_DIR$/Sentimentamap.users/Sentimentamap.users.iml" />
+      <module fileurl="file://$PROJECT_DIR$/discovery-service/discovery-service.iml" filepath="$PROJECT_DIR$/discovery-service/discovery-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/vaderMicroService/vaderMicroService.iml" filepath="$PROJECT_DIR$/vaderMicroService/vaderMicroService.iml" />
+    </modules>
+  </component>
+</project>

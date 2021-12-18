@@ -1,0 +1,12 @@
+
+  <div class="container-fluid" id="date-selector">
+    <button class="btn btn-Primary" (click)="changeDay('backwards')"><i class="material-icons">fast_rewind</i></button>
+    <button class="btn btn-Primary" (click)="previousDayEndOf()"><mat-icon>keyboard_arrow_left</mat-icon></button>
+    <p>{{date}}</p>
+    <button class="btn btn-Primary" (click)="nextDayStartOf()"><mat-icon>keyboard_arrow_right</mat-icon></button>
+    <button class="btn btn-Primary" (click)="changeDay('forwards')"><i class="material-icons">fast_forward</i></button>
+  </div>
+<div class="container-fluid" id="time-selector">
+  <label for="customRange1" class="form-label">{{time}}</label>
+  <input type="range" [formControl]="rangeControl" class="form-range" id="timerange" min="0" max="47" step="1" #timerange (input)="changeTime(timerange.value)">
+</div>

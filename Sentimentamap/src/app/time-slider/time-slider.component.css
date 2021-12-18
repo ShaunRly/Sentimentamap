@@ -1,0 +1,31 @@
+p{
+    align-self: center;
+    color: blanchedalmond;
+}
+
+.form-range{
+    width: 40vw;
+}
+
+.form-label{
+    font-size: 2rem;
+    color: blanchedalmond;
+    align-self: center;
+}
+
+#time-selector{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#date-selector{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+button {
+    position: relative;
+}
+
